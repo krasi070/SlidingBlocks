@@ -7,7 +7,7 @@ public class Puzzle : MonoBehaviour
     private void Start()
     {
         InitQuads();
-        Camera.main.orthographicSize = size / 2f + 1;
+        Camera.main.orthographicSize = size * 0.55f;
     }
 
     private void InitQuads()
