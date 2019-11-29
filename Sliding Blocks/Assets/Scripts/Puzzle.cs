@@ -2,6 +2,7 @@
 
 public class Puzzle : MonoBehaviour
 {
+    public Texture2D image;
     public int size = 4;
 
     private PuzzlePiece _hiddenPiece;
@@ -14,9 +15,10 @@ public class Puzzle : MonoBehaviour
 
     private void InitQuads()
     {
-        for (float row = 0; row < size; row++)
+        Texture2D[,] slices = ImageSlicer.GetSlices(image, size);
+        for (int row = 0; row < size; row++)
         {
-            for (float col = 0; col < size; col++)
+            for (int col = 0; col < size; col++)
             {
                 GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 quad.transform.position = new Vector3(col - (size / 2f) + 0.5f, row - (size / 2f) + 0.5f, 0f);
@@ -24,7 +26,7 @@ public class Puzzle : MonoBehaviour
 
                 PuzzlePiece puzzlePiece = quad.AddComponent<PuzzlePiece>();
                 puzzlePiece.OnPuzzlePiecePressed += MovePuzzlePiece;
-                puzzlePiece.coordinates = new Vector2(row, col);
+                puzzlePiece.Init(new Vector2(col, row), slices[row, col]);
 
                 if (row == 0 && col == size - 1)
                 {

@@ -7,6 +7,13 @@ public class PuzzlePiece : MonoBehaviour
 
     public Vector2 coordinates;
 
+    public void Init(Vector2 coordinates, Texture2D image)
+    {
+        this.coordinates = coordinates;
+        GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");
+        GetComponent<MeshRenderer>().material.mainTexture = image;
+    }
+
     private void OnMouseDown()
     {
         OnPuzzlePiecePressed?.Invoke(this);
