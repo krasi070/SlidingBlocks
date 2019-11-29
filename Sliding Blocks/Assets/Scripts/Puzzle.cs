@@ -7,23 +7,19 @@ public class Puzzle : MonoBehaviour
     private void Start()
     {
         InitQuads();
-        SetCamera();
-    }
-
-    private void SetCamera()
-    {
-        Camera.main.transform.position += new Vector3(size / 2f, size / 2f, 0f);
         Camera.main.orthographicSize = size / 2f + 1;
     }
 
     private void InitQuads()
     {
-        for (int row = 0; row < size; row++)
+        float start = -size / 2f + 0.5f;
+        float end = size / 2f - 0.5f;
+        for (float row = start; row <= end; row++)
         {
-            for (int col = 0; col < size; col++)
+            for (float col = start; col <= end; col++)
             {
                 GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                quad.transform.position = new Vector3(col + 0.5f, row + 0.5f, 0f);
+                quad.transform.position = new Vector3(col, row , 0f);
                 quad.transform.parent = transform;
             }
         }
