@@ -4,6 +4,7 @@ public class Puzzle : MonoBehaviour
 {
     public Texture2D image;
     public int size = 4;
+    public float speed = 3f;
 
     private PuzzlePiece _hiddenPiece;
 
@@ -45,9 +46,9 @@ public class Puzzle : MonoBehaviour
             _hiddenPiece.coordinates = puzzlePiece.coordinates;
             puzzlePiece.coordinates = tempCoord;
 
-            Vector3 tempPos = _hiddenPiece.transform.position;
+            Vector3 target = _hiddenPiece.transform.position;
             _hiddenPiece.transform.position = puzzlePiece.transform.position;
-            puzzlePiece.transform.position = tempPos;
+            StartCoroutine(puzzlePiece.Slide(target, speed));
         }
     }
 }

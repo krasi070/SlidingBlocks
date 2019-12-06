@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class PuzzlePiece : MonoBehaviour
@@ -12,6 +13,16 @@ public class PuzzlePiece : MonoBehaviour
         this.coordinates = coordinates;
         GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");
         GetComponent<MeshRenderer>().material.mainTexture = image;
+    }
+
+    public IEnumerator Slide(Vector3 target, float speed)
+    {
+        while (Vector3.Distance(transform.position, target) > 0.001f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+
+            yield return null;
+        }
     }
 
     private void OnMouseDown()
