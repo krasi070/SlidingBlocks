@@ -1,17 +1,21 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Puzzle : MonoBehaviour
 {
     public Texture2D image;
     public int size = 4;
-    public float speed = 3f;
+    public float slideSpeed = 3f;
 
     private PuzzlePiece _hiddenPiece;
+    private Queue<PuzzlePiece> _toSlideQueue;
+    private bool _pieceIsSliding;
 
     private void Start()
     {
         InitQuads();
         Camera.main.orthographicSize = size * 0.55f;
+        _toSlideQueue = new Queue<PuzzlePiece>();
     }
 
     private void InitQuads()
@@ -26,7 +30,8 @@ public class Puzzle : MonoBehaviour
                 quad.transform.parent = transform;
 
                 PuzzlePiece puzzlePiece = quad.AddComponent<PuzzlePiece>();
-                puzzlePiece.OnPuzzlePiecePressed += MovePuzzlePiece;
+                puzzlePiece.OnPuzzlePiecePressed += EnqueuePuzzlePiece;
+                puzzlePiece.OnPuzzlePieceFinishedSliding += OnPuzzlePieceFinishedMoving;
                 puzzlePiece.Init(new Vector2(col, row), slices[row, col]);
 
                 if (row == 0 && col == size - 1)
@@ -35,6 +40,20 @@ public class Puzzle : MonoBehaviour
                     _hiddenPiece = puzzlePiece;
                 }
             }
+        }
+    }
+
+    private void EnqueuePuzzlePiece(PuzzlePiece puzzlePiece)
+    {
+        _toSlideQueue.Enqueue(puzzlePiece);
+        SlideNextInQueue();
+    }
+
+    private void SlideNextInQueue()
+    {
+        while (_toSlideQueue.Count > 0 && !_pieceIsSliding)
+        {
+            MovePuzzlePiece(_toSlideQueue.Dequeue());
         }
     }
 
@@ -48,7 +67,14 @@ public class Puzzle : MonoBehaviour
 
             Vector3 target = _hiddenPiece.transform.position;
             _hiddenPiece.transform.position = puzzlePiece.transform.position;
-            StartCoroutine(puzzlePiece.Slide(target, speed));
+            puzzlePiece.SlideToPosition(target, slideSpeed);
+            _pieceIsSliding = true;
         }
+    }
+
+    private void OnPuzzlePieceFinishedMoving()
+    {
+        _pieceIsSliding = false;
+        SlideNextInQueue();
     }
 }

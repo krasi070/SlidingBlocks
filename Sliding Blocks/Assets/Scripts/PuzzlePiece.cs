@@ -5,6 +5,7 @@ using UnityEngine;
 public class PuzzlePiece : MonoBehaviour
 {
     public event Action<PuzzlePiece> OnPuzzlePiecePressed;
+    public event Action OnPuzzlePieceFinishedSliding;
 
     public Vector2 coordinates;
 
@@ -15,7 +16,12 @@ public class PuzzlePiece : MonoBehaviour
         GetComponent<MeshRenderer>().material.mainTexture = image;
     }
 
-    public IEnumerator Slide(Vector3 target, float speed)
+    public void SlideToPosition(Vector3 target, float speed)
+    {
+        StartCoroutine(Slide(target, speed));
+    }
+
+    private IEnumerator Slide(Vector3 target, float speed)
     {
         while (Vector3.Distance(transform.position, target) > 0.001f)
         {
@@ -23,6 +29,8 @@ public class PuzzlePiece : MonoBehaviour
 
             yield return null;
         }
+
+        OnPuzzlePieceFinishedSliding?.Invoke();
     }
 
     private void OnMouseDown()
