@@ -111,10 +111,26 @@ public class Puzzle : MonoBehaviour
         }
     }
 
+    private void OnPuzzlePieceFinishedMoving()
+    {
+        _pieceIsSliding = false;
+
+        if (_state == PuzzleState.InPlay && IsSolved())
+        {
+            ShowHiddenPiece();
+            _state = PuzzleState.Solved;
+        }
+        else
+        {
+            SlideNextInQueue();
+        }
+    }
+
     private IEnumerator RandomShuffle()
     {
         _state = PuzzleState.Shuffling;
 
+        _hiddenPiece.gameObject.SetActive(false);
         int x = _hiddenPiece.coordinates.x;
         int y = _hiddenPiece.coordinates.y;
         int prevX = -1;
@@ -138,12 +154,6 @@ public class Puzzle : MonoBehaviour
         }
 
         _state = PuzzleState.InPlay;
-    }
-
-    private void OnPuzzlePieceFinishedMoving()
-    {
-        _pieceIsSliding = false;
-        SlideNextInQueue();
     }
 
     private PuzzlePiece GetRandomAdjecentPiece(int x, int y, int prevX, int prevY)
@@ -178,5 +188,26 @@ public class Puzzle : MonoBehaviour
         }
 
         return randomPiece;
+    }
+
+    private bool IsSolved()
+    {
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                if ((_puzzle[x, y].coordinates - _puzzle[x, y].originalCoordinates).magnitude != 0)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void ShowHiddenPiece()
+    {
+        _hiddenPiece.gameObject.SetActive(true);
     }
 }

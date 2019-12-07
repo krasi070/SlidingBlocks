@@ -152,9 +152,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   image: {fileID: 2800000, guid: ae7e410097e88c842a19959c040e06bd, type: 3}
   size: 4
-  shuffleMoves: 76
+  shuffleMoves: 64
   slideSpeed: 8
-  shuffleSpeed: 20
+  shuffleSpeed: 16
 --- !u!4 &96838911
 Transform:
   m_ObjectHideFlags: 0
