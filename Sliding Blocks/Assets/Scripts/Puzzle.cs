@@ -13,6 +13,7 @@ public class Puzzle : MonoBehaviour
     private PuzzlePiece _hiddenPiece;
     private Queue<PuzzlePiece> _toSlideQueue;
     private bool _pieceIsSliding;
+    private bool _shuffling;
 
     private void Start()
     {
@@ -20,7 +21,14 @@ public class Puzzle : MonoBehaviour
         _toSlideQueue = new Queue<PuzzlePiece>();
 
         InitQuads();
-        StartCoroutine(Shuffle());
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !_shuffling)
+        {
+            StartCoroutine(RandomShuffle());
+        }
     }
 
     private void InitQuads()
@@ -79,13 +87,24 @@ public class Puzzle : MonoBehaviour
 
             Vector3 target = _hiddenPiece.transform.position;
             _hiddenPiece.transform.position = puzzlePiece.transform.position;
-            puzzlePiece.SlideToPosition(target, slideSpeed);
+
+            if (_shuffling)
+            {
+                puzzlePiece.SlideToPosition(target, slideSpeed * 3);
+            }
+            else
+            {
+                puzzlePiece.SlideToPosition(target, slideSpeed);
+            }
+            
             _pieceIsSliding = true;
         }
     }
 
-    private IEnumerator Shuffle()
+    private IEnumerator RandomShuffle()
     {
+        _shuffling = true;
+
         int x = (int)_hiddenPiece.coordinates.x;
         int y = (int)_hiddenPiece.coordinates.y;
         int prevX = -1;
@@ -107,6 +126,8 @@ public class Puzzle : MonoBehaviour
                 yield return null;
             }
         }
+
+        _shuffling = false;
     }
 
     private void OnPuzzlePieceFinishedMoving()
