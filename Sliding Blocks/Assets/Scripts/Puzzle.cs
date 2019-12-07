@@ -6,14 +6,22 @@ public class Puzzle : MonoBehaviour
 {
     public Texture2D image;
     public int size = 4;
-    public int numberOfShuffleMoves = 50;
-    public float slideSpeed = 3f;
+    public int shuffleMoves = 50;
+    public float slideSpeed = 8f;
+    public float shuffleSpeed = 24f;
 
+    private enum PuzzleState
+    {
+        Solved,
+        Shuffling,
+        InPlay
+    };
+
+    private PuzzleState _state;
     private PuzzlePiece[,] _puzzle;
     private PuzzlePiece _hiddenPiece;
     private Queue<PuzzlePiece> _toSlideQueue;
     private bool _pieceIsSliding;
-    private bool _shuffling;
 
     private void Start()
     {
@@ -25,7 +33,7 @@ public class Puzzle : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !_shuffling)
+        if (Input.GetKeyDown(KeyCode.Space) && _state == PuzzleState.Solved)
         {
             StartCoroutine(RandomShuffle());
         }
@@ -61,19 +69,22 @@ public class Puzzle : MonoBehaviour
 
     private void EnqueuePuzzlePiece(PuzzlePiece puzzlePiece)
     {
-        _toSlideQueue.Enqueue(puzzlePiece);
-        SlideNextInQueue();
+        if (_state == PuzzleState.InPlay)
+        {
+            _toSlideQueue.Enqueue(puzzlePiece);
+            SlideNextInQueue();
+        }
     }
 
     private void SlideNextInQueue()
     {
         while (_toSlideQueue.Count > 0 && !_pieceIsSliding)
         {
-            MovePuzzlePiece(_toSlideQueue.Dequeue());
+            SlidePuzzlePiece(_toSlideQueue.Dequeue());
         }
     }
 
-    private void MovePuzzlePiece(PuzzlePiece puzzlePiece)
+    private void SlidePuzzlePiece(PuzzlePiece puzzlePiece)
     {
         if ((puzzlePiece.coordinates - _hiddenPiece.coordinates).sqrMagnitude == 1f)
         {
@@ -87,11 +98,11 @@ public class Puzzle : MonoBehaviour
             Vector3 target = _hiddenPiece.transform.position;
             _hiddenPiece.transform.position = puzzlePiece.transform.position;
 
-            if (_shuffling)
+            if (_state == PuzzleState.Shuffling)
             {
-                puzzlePiece.SlideToPosition(target, slideSpeed * 3);
+                puzzlePiece.SlideToPosition(target, shuffleSpeed);
             }
-            else
+            else if (_state == PuzzleState.InPlay)
             {
                 puzzlePiece.SlideToPosition(target, slideSpeed);
             }
@@ -102,14 +113,14 @@ public class Puzzle : MonoBehaviour
 
     private IEnumerator RandomShuffle()
     {
-        _shuffling = true;
+        _state = PuzzleState.Shuffling;
 
         int x = _hiddenPiece.coordinates.x;
         int y = _hiddenPiece.coordinates.y;
         int prevX = -1;
         int prevY = -1;
 
-        for (int i = 0; i < numberOfShuffleMoves; i++)
+        for (int i = 0; i < shuffleMoves; i++)
         {
             PuzzlePiece toSlide = GetRandomAdjecentPiece(x, y, prevX, prevY);
 
@@ -118,15 +129,15 @@ public class Puzzle : MonoBehaviour
             x = toSlide.coordinates.x;
             y = toSlide.coordinates.y;
 
-            EnqueuePuzzlePiece(toSlide);
+            SlidePuzzlePiece(toSlide);
 
-            while (_toSlideQueue.Count > 0 || _pieceIsSliding)
+            while (_pieceIsSliding)
             {
                 yield return null;
             }
         }
 
-        _shuffling = false;
+        _state = PuzzleState.InPlay;
     }
 
     private void OnPuzzlePieceFinishedMoving()
