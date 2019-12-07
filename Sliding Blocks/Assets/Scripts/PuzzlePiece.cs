@@ -8,12 +8,13 @@ public class PuzzlePiece : MonoBehaviour
     public event Action OnPuzzlePieceFinishedSliding;
 
     public Vector2Int coordinates;
-    public Vector2Int originalCoordinates;
+
+    private Vector2Int _originalCoordinates;
 
     public void Init(Vector2Int coordinates, Texture2D image)
     {
         this.coordinates = coordinates;
-        this.originalCoordinates = coordinates;
+        this._originalCoordinates = coordinates;
         GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");
         GetComponent<MeshRenderer>().material.mainTexture = image;
     }
@@ -21,6 +22,11 @@ public class PuzzlePiece : MonoBehaviour
     public void SlideToPosition(Vector3 target, float speed)
     {
         StartCoroutine(Slide(target, speed));
+    }
+
+    public bool IsAtOriginalCoordinates()
+    {
+        return coordinates == _originalCoordinates;
     }
 
     private IEnumerator Slide(Vector3 target, float speed)

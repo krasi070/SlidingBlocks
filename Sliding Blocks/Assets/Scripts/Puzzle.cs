@@ -58,7 +58,6 @@ public class Puzzle : MonoBehaviour
 
                 if (y == 0 && x == size - 1)
                 {
-                    quad.SetActive(false);
                     _hiddenPiece = puzzlePiece;
                 }
             }
@@ -115,12 +114,7 @@ public class Puzzle : MonoBehaviour
     {
         _pieceIsSliding = false;
 
-        if (_state == PuzzleState.InPlay && IsSolved())
-        {
-            ShowHiddenPiece();
-            _state = PuzzleState.Solved;
-        }
-        else
+        if (_state == PuzzleState.InPlay && !IsSolved())
         {
             SlideNextInQueue();
         }
@@ -196,18 +190,16 @@ public class Puzzle : MonoBehaviour
         {
             for (int y = 0; y < size; y++)
             {
-                if ((_puzzle[x, y].coordinates - _puzzle[x, y].originalCoordinates).magnitude != 0)
+                if (!_puzzle[x, y].IsAtOriginalCoordinates())
                 {
                     return false;
                 }
             }
         }
 
-        return true;
-    }
-
-    private void ShowHiddenPiece()
-    {
+        _state = PuzzleState.Solved;
         _hiddenPiece.gameObject.SetActive(true);
+
+        return true;
     }
 }
