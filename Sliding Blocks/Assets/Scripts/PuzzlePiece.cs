@@ -7,9 +7,9 @@ public class PuzzlePiece : MonoBehaviour
     public event Action<PuzzlePiece> OnPuzzlePiecePressed;
     public event Action OnPuzzlePieceFinishedSliding;
 
-    public Vector2 coordinates;
+    public Vector2Int coordinates;
 
-    public void Init(Vector2 coordinates, Texture2D image)
+    public void Init(Vector2Int coordinates, Texture2D image)
     {
         this.coordinates = coordinates;
         GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");

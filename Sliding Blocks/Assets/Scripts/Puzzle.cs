@@ -45,7 +45,7 @@ public class Puzzle : MonoBehaviour
                 PuzzlePiece puzzlePiece = quad.AddComponent<PuzzlePiece>();
                 puzzlePiece.OnPuzzlePiecePressed += EnqueuePuzzlePiece;
                 puzzlePiece.OnPuzzlePieceFinishedSliding += OnPuzzlePieceFinishedMoving;
-                puzzlePiece.Init(new Vector2(x, y), slices[y, x]);
+                puzzlePiece.Init(new Vector2Int(x, y), slices[y, x]);
                 _puzzle[x, y] = puzzlePiece;
 
                 if (y == 0 && x == size - 1)
@@ -77,11 +77,10 @@ public class Puzzle : MonoBehaviour
     {
         if ((puzzlePiece.coordinates - _hiddenPiece.coordinates).sqrMagnitude == 1f)
         {
-            PuzzlePiece temp = _puzzle[(int)puzzlePiece.coordinates.x, (int)puzzlePiece.coordinates.y];
-            _puzzle[(int)puzzlePiece.coordinates.x, (int)puzzlePiece.coordinates.y] = _puzzle[(int)_hiddenPiece.coordinates.x, (int)_hiddenPiece.coordinates.y];
-            _puzzle[(int)_hiddenPiece.coordinates.x, (int)_hiddenPiece.coordinates.y] = temp;
+            _puzzle[puzzlePiece.coordinates.x, puzzlePiece.coordinates.y] = _hiddenPiece;
+            _puzzle[_hiddenPiece.coordinates.x, _hiddenPiece.coordinates.y] = puzzlePiece;
 
-            Vector2 tempCoord = _hiddenPiece.coordinates;
+            Vector2Int tempCoord = _hiddenPiece.coordinates;
             _hiddenPiece.coordinates = puzzlePiece.coordinates;
             puzzlePiece.coordinates = tempCoord;
 
@@ -105,8 +104,8 @@ public class Puzzle : MonoBehaviour
     {
         _shuffling = true;
 
-        int x = (int)_hiddenPiece.coordinates.x;
-        int y = (int)_hiddenPiece.coordinates.y;
+        int x = _hiddenPiece.coordinates.x;
+        int y = _hiddenPiece.coordinates.y;
         int prevX = -1;
         int prevY = -1;
 
@@ -116,8 +115,8 @@ public class Puzzle : MonoBehaviour
 
             prevX = x;
             prevY = y;
-            x = (int)toSlide.coordinates.x;
-            y = (int)toSlide.coordinates.y;
+            x = toSlide.coordinates.x;
+            y = toSlide.coordinates.y;
 
             EnqueuePuzzlePiece(toSlide);
 
@@ -161,7 +160,7 @@ public class Puzzle : MonoBehaviour
         }
 
         PuzzlePiece randomPiece = candidates[Random.Range(0, candidates.Count)];
-        if (prevX == (int)randomPiece.coordinates.x && prevY == (int)randomPiece.coordinates.y)
+        if (prevX == randomPiece.coordinates.x && prevY == randomPiece.coordinates.y)
         {
             candidates.Remove(randomPiece);
             return candidates[Random.Range(0, candidates.Count)];
