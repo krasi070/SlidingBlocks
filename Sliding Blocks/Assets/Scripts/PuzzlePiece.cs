@@ -31,7 +31,7 @@ public class PuzzlePiece : MonoBehaviour
 
     private IEnumerator Slide(Vector3 target, float speed)
     {
-        while (Vector3.Distance(transform.position, target) > 0.001f)
+        while ((transform.position - target).sqrMagnitude > 0)
         {
             transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
 
