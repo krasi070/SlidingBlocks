@@ -15,6 +15,8 @@ public class PuzzlePiece : MonoBehaviour
     {
         this.coordinates = coordinates;
         this._originalCoordinates = coordinates;
+
+        // This shader needs to be added when building the project.
         GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");
         GetComponent<MeshRenderer>().material.mainTexture = image;
     }
