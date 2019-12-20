@@ -20,6 +20,7 @@ public class Puzzle : MonoBehaviour
     private PuzzleState _state;
     private PuzzlePiece[,] _puzzle;
     private PuzzlePiece _hiddenPiece;
+    private GameObject _cornerPicture;
     private Queue<PuzzlePiece> _toSlideQueue;
     private bool _pieceIsSliding;
 
@@ -36,6 +37,7 @@ public class Puzzle : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && _state == PuzzleState.Solved)
         {
             StartCoroutine(RandomShuffle());
+            PlaceCornerPicture();
         }
     }
 
@@ -199,7 +201,20 @@ public class Puzzle : MonoBehaviour
 
         _state = PuzzleState.Solved;
         _hiddenPiece.gameObject.SetActive(true);
+        Destroy(_cornerPicture);
 
         return true;
+    }
+
+    private void PlaceCornerPicture()
+    {
+        _cornerPicture = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        _cornerPicture.transform.localScale = new Vector3(Camera.main.orthographicSize / 2.2f, Camera.main.orthographicSize / 2.2f);
+        _cornerPicture.transform.position = new Vector3(
+            -size / 2f - _cornerPicture.transform.localScale.x / 2f - size / 8f, 
+            size / 2f - _cornerPicture.transform.localScale.y / 2f);
+
+        _cornerPicture.GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/Texture");
+        _cornerPicture.GetComponent<MeshRenderer>().material.mainTexture = image;
     }
 }
